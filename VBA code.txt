@@ -1,0 +1,73 @@
+Sub vba_challenge():
+
+For Each ws In Worksheets
+Dim worksheetname As String
+Dim open_price As Double
+Dim close_price As Double
+Dim yearly_change As Double
+Dim percentage As Double
+Dim ticker As String
+Dim table_row As Integer
+Dim total_vol As Double
+
+table_row = 2
+
+total_vol = 0
+
+open_price = ws.Cells(2, 3).Value
+
+LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+ws.Cells(1, 9).Value = "Ticker"
+ws.Cells(1, 10).Value = "Yearly Change"
+ws.Cells(1, 11).Value = "Percentage"
+ws.Cells(1, 12).Value = "Total Stock Volume"
+
+For i = 2 To LastRow
+    
+
+     If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        ticker = ws.Cells(i, 1).Value
+        'Calculate total volume when tickers are not the same
+        total_vol = total_vol + Cells(i, 7).Value
+        'print to summary table
+        ws.Range("I" & table_row).Value = ticker
+        ws.Range("L" & table_row).Value = total_vol
+        
+        'calculate yearly change and color
+        close_price = ws.Cells(i, 6).Value
+        yearly_change = close_price - open_price
+        ws.Range("J" & table_row).Value = yearly_change
+        
+        If (yearly_change > 0) Then
+            ws.Range("J" & table_row).Interior.ColorIndex = 4
+        ElseIf (yearly_change < 0) Then
+            ws.Range("J" & table_row).Interior.ColorIndex = 3
+        End If
+        
+        'calculating percentage
+        If open_price = 0 Then
+            percentage = close_price - open_price
+        Else:
+            percentage = Round((yearly_change / open_price) * 100, 2)
+        End If
+        ws.Range("K" & table_row).Value = percentage & "%"
+        
+        
+        table_row = table_row + 1
+        open_price = ws.Cells(i + 1, 3).Value
+        total_vol = 0
+        
+    Else:
+        'calculating total volume when tickers are the same
+        total_vol = total_vol + Cells(i, 7).Value
+    End If
+
+    
+Next i
+
+
+Next ws
+
+
+End Sub
